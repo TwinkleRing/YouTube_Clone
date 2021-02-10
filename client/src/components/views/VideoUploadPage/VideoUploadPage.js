@@ -2,6 +2,8 @@ import React , { useState } from 'react'
 import { Typography, Button, Form, message, Input, Icon } from 'antd';
 import Dropzone from 'react-dropzone';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
+
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -18,11 +20,12 @@ const CategoryOptions = [
     { value : 3, label : "Pets & Animals"}
 ]
 
-function VideoUploadPage() {
+function VideoUploadPage(props) {
 
+    const user = useSelector(state => state.user); // state에 가서 user 정보를 가져와서 user 변수에 담는다..
     const [VideoTitle, setVideoTitle] = useState("")
     const [Description, setDescription] = useState("")
-    const [Private, setPrivate] = useState(0)
+    const [privacy, setPrivacy] = useState(0)
     const [Category, setCategory] = useState("Film & Animation")
     const [FilePath, setFilePath] = useState("")
     const [Duration, setDuration] = useState("")
@@ -37,16 +40,16 @@ function VideoUploadPage() {
     }
 
     const onPrivateChange = (e) => {
-        setPrivate(e.currentTarget.value)
+        setPrivacy(e.currentTarget.value)
     }
     
     const onCategoryChange = (e) => {
         setCategory(e.currentTarget.value)
     }
     const onDrop = (files) => {
-        let formData = new FormData;
+        let formData = new FormData();
         const config = {
-            header : {'content-type' : 'multipart/form-data'}
+            header : { 'content-type' : 'multipart/form-data' }
         }
         formData.append("file", files[0]) // 첫번째꺼 가져오기
         //console.log(files)
@@ -82,13 +85,42 @@ function VideoUploadPage() {
             })
     }
 
+    const onSubmit = (e) => {
+        e.preventDefault();
+
+        const variables = {
+            writer : user.userData._id,
+            title : VideoTitle,
+            description : Description,
+            privacy : privacy,
+            filePath : FilePath,
+            category : Category,
+            duration : Duration,
+            thumbnail : ThumbnailPath,
+        }
+
+        axios.post('/api/video/uploadVideo', variables)
+            .then(response => {
+                if(response.data.success) {
+                    message.success('성공적으로 업로드를 했습니다.')
+                    setTimeout(() => {
+                        props.history.push('/')
+                    }, 3000);
+                    
+
+                } else {
+                    alert('비디오 업로드에 실패했습니다.')
+                }
+            })
+    }
+
     return (
         <div style={{ maxWidth:'700px', margin:'2rem auto' }}>
                 <div style={{ textAlign:'center', marginBottom :'2rem' }}>
                     <Title level={2}> Upload Video </Title>
 
                 </div>
-                <Form onSubmit>
+                <Form onSubmit = {onSubmit}>
                     <div style={{ display:'flex', justifyContent: 'space-between' }}>
                         
                         { /* Drop zone => npm install react-dropzone --save */} 
@@ -156,7 +188,7 @@ function VideoUploadPage() {
                 <br />
                 <br />
 
-                <Button type ="primary" size="large" onClick>
+                <Button type ="primary" size="large" onClick={onSubmit}>
                     Submit
                 </Button>
             </Form>
