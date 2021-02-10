@@ -19,72 +19,88 @@ let storage = multer.diskStorage({
         if (ext !== '.mp4') {
             return cb(res.status(400).end('only mp4 is allowed'), false);
         }
-        cb(null, true)
+        cb(null, true);
     }
 });
 
-const upload = multer({ storage : storage }).single('file');
+const upload = multer({ storage: storage }).single("file");
 
 //=================================
 //             Video
 //=================================
-
 router.post('/uploadfiles' , (req, res) => { // req는 클라이언트에서 보낸 파일
     // 클라이언트로부터 받은 비디오를 서버에 저장한다.  =>  npm install multer --save (in Server directory)
     upload(req, res, err => {
         if (err) {
-            return res.json({ success : false, err})
+            return res.json({ success: false, err })
         }
-        return res.json({ success: true, filePath: res.req.file.path, fileName: res.req.file.filename });
+        return res.json({ success: true, filePath: res.req.file.path, fileName: res.req.file.filename })
     });
    
 });
 
-router.post('/uploadVideo', (req, res) => {
+router.post("/uploadVideo", (req, res) => {
     // 비디오 정보들을 저장한다.
     const video = new Video(req.body)
 
-    video.save((err , doc) => {
-        if(err) return res.json({ success : false , err})
-        res.status(200).json({ success : true })
+    video.save((err, video) => {
+        if(err) return res.status(400).json({ success: false, err })
+        return res.status(200).json({
+            success: true 
+        })
     })
 
-})
+});
+
 
 router.post('/thumbnail' , (req, res) => { // req는 클라이언트에서 보낸 파일
     // 썸네일 생성하고 비디오 러닝타임 정보 가져오기.
 
-    let filePath = ""
-    let fileDuration = ""
+    let thumbsFilePath ="";
+    let fileDuration ="";
+
 
     // 비디오 정보 가져오기 
+    ffmpeg.ffprobe(req.body.filePath, function(err, metadata){
+        console.dir(metadata);
+        console.log(metadata.format.duration);
 
+        fileDuration = metadata.format.duration;
+    })
+    
     // 썸네일 생성
-    ffmpeg(req.body.url) // 클라이언트에서 보낸 비디오 저장 경로
+    ffmpeg(req.body.filePath) // 클라이언트에서 보낸 비디오 저장 경로
     .on('filenames', function (filenames) { // 비디오 썸네일 파일 이름 생성하기.
         console.log('Will generate ' + filenames.join(', '))
         console.log(filenames)
+        thumbsFilePath = "uploads/thumbnails/" + filenames[0];
 
-        filePath = "upload/thumbnails/" + filenames[0]
     })
-    .on('end', function ()  { // 썸네일 생성하고 뭐할거냐
-        console.log("Screenshots taken");
-        return res.json({ success : true, url : filePath , fileDuration : fileDuration });
+    .on('end', function () { // 썸네일 생성하고 뭐할거냐
+        console.log('Screenshots taken');
+        return res.json({ success: true, thumbsFilePath: thumbsFilePath, fileDuration: fileDuration})
     })
-    .on('error', function (err) {
-        console.error(err);
-        return res.json( { success : false , err });
-    })
-    .screenshot({
+    .screenshots({
         // Will take screenshots at 20%, 40% , 60% and 80% of the video
-        count : 3,
-        folder : 'uploads/thumbnails',
-        size : '320x240',
+        count: 3,
+        folder: 'uploads/thumbnails',
+        size:'320x240',
         // %b input basename ( filename w/o extension )
-        filename :'thumbnail-%b.png'
-    })
+        filename:'thumbnail-%b.png'
+    });
    
-})
+});
+
+
+router.get('/getVideos', (req, res) => {
+    // 비디오를 DB에서 가져와서 클라이언트에 보낸다.
+    Video.find()
+        .populate('writer') // populate해서 writer의 모든 정보 가져오기.
+        .exec((err, videos) => {
+            if(err) return res.status(400).send(err);
+            res.status(200).json( { success : true , videos })
+        })
+});
 
 
 module.exports = router;

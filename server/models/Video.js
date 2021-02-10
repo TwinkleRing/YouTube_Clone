@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const videoSchema = mongoose.Schema({
 
+const videoSchema = mongoose.Schema(
+    {
     writer : {
         type : Schema.Types.ObjectId, // Id만 넣어도 User 모델에 가서 모든 정보들을 다 불러 올 수 있다.
         ref : 'User' // User에서 불러온다.
@@ -11,16 +12,16 @@ const videoSchema = mongoose.Schema({
         maxlength : 50
     },
     descripion : {
-        type : String
+        type : String,
     },
     privacy : {
-        type : Number
+        type : Number,
     },
     filePath : {
-        type : String
+        type : String,
     },
     category : {
-        type : String
+        type : String,
     },
     views : {
         type : Number,
@@ -34,8 +35,8 @@ const videoSchema = mongoose.Schema({
     }
 
     
-} , { timestamps : true })
+} , { timestamps : true });
 
-const Video = mongoose.model('Video', videoSchema);
+const Video = mongoose.model("Video", videoSchema);
 
-module.exports = { Video }
+module.exports = { Video };
