@@ -30,7 +30,7 @@ https://blog.naver.com/chandong83/222095346417
 # 10. 비디오 Detail Page에 Side 비디오 생성
 
 1. Side Video 부분 Layout template 만들기
-2. 한개의 카드 template 만들기
+2. 한 개의 카드 template 만들기
 3. DB에서 모든 비디오 데이터를 불러오기
 4. 불러온 데이터 화면에 출력하기.
 
