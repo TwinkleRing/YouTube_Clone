@@ -30,14 +30,22 @@ https://blog.naver.com/chandong83/222095346417
 # 10. 비디오 Detail Page에 Side 비디오 생성
 
 1. Side Video 부분 Layout template 만들기
-2. 한 개의 카드 template 만들기
+2. 한개의 카드 template 만들기
 3. DB에서 모든 비디오 데이터를 불러오기
 4. 불러온 데이터 화면에 출력하기.
 
-# 11. 구독 기능1
+# 11. 구독 기능 1
 
 1. Subscriber Model 만들기
 2. Subscriber Button UI 만들기
 3. 데이터베이스에서 얼마나 많은 사람이 비디오 업로드 한 유저를 구독하는지 정보 가져오기
 4. 내가 이 비디오 업로드 한 유저를 구독하는지 정보 가져오기
 5. 가져온 정보들 화면에 출력하기
+
+# 12. 구독 비디오 페이지(Subscription Page)
+
+1. 빈 Subscription 페이지 생성
+2. Subscription Page를 위한 Route 만들기
+3. Template 만들기
+4. 내가 구독한 유저의 비디오들만 서버에서 가져오기
+5. 가져온 비디오 데이터들을 화면에 출력하기.
