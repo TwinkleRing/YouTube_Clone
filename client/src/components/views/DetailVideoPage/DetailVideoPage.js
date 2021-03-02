@@ -5,14 +5,16 @@ import SideVideo from './Sections/SideVideo';
 import Subscriber from './Sections/Subscriber';
 import Comments from './Sections/Comments'
 import LikeDislikes from './Sections/LikeDislikes';
-function VideoDetailPage(props) {
+function DetailVideoPage(props) {
 
 
     const videoId = props.match.params.videoId
     const [Video, setVideo] = useState([])
     const [CommentLists, setCommentLists] = useState([])
 
-    const videoVariable = { videoId: videoId }
+    const videoVariable = {
+        videoId: videoId
+    }
 
     useEffect(() => {
         axios.post('/api/video/getVideo', videoVariable)
@@ -51,10 +53,7 @@ function VideoDetailPage(props) {
                         <video style={{ width: '100%' }} src={`http://localhost:5000/${Video.filePath}`} controls></video>
 
                         <List.Item
-                            actions={[
-                                <LikeDislikes video videoId={videoId} userId={localStorage.getItem('userId')} />, 
-                                <Subscriber userTo={Video.writer._id} userFrom={localStorage.getItem('userId')} />
-                            ]}
+                            actions={[<LikeDislikes video videoId={videoId} userId={localStorage.getItem('userId')}  />, <Subscriber userTo={Video.writer._id} userFrom={localStorage.getItem('userId')} />]}
                         >
                             <List.Item.Meta
                                 avatar={<Avatar src={Video.writer && Video.writer.image} />}
@@ -85,4 +84,4 @@ function VideoDetailPage(props) {
 
 }
 
-export default VideoDetailPage
+export default DetailVideoPage
